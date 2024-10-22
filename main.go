@@ -1,5 +1,5 @@
-package main
+package workflowtest
 
-func main() {
-	println("hello world")
+func Add(a, b int) int {
+	return a + b
 }

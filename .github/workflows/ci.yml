@@ -50,6 +50,25 @@ jobs:
       - name: Test
         run: go test -race -v -coverprofile=cover.out -shuffle on ./...
 
+  test-env:
+    name: Test with ENV
+    runs-on: ubuntu-latest
+    env:
+        SKIP_TEST: ${{ vars.SKIP_TEST }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.1
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+
+      - name: Test
+        run: go test -race -v -coverprofile=cover.out -shuffle on ./...
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -79,11 +98,11 @@ jobs:
 
       - name: 'Checkout Repository'
         uses: actions/checkout@163217dfcd28294438ea1c1c149cfaf66eec283e # v3.6.0
-        with:
-          base_ref: 'main'
-          head_ref: 'feature-branch'
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@a6993e2c61fd5dc440b409aa1d6904921c5e1894 # v4.3.5
+        with:
+          base-ref: ${{ github.event.pull_request.base.sha || 'main' }}
+          head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
   govulncheck:
     name: Go Vulnerabilities Check
